@@ -86,7 +86,7 @@ class LowLevel(object):
                     self.logger.warn(u'Failed to connect via TLS-PSK. Trying plain connection.')
             else:
                 connected = True
-                self.logger.debug("Encryption: {}".format(self.socket.cipher()))
+                self.logger.debug("Encryption: {0}".format(self.socket.cipher()))
 
         if not connected:
             self.__connect_plain()
@@ -105,9 +105,9 @@ class LowLevel(object):
         except socket.gaierror as e:
             self._handleSocketError(e)
             raise bareos.exceptions.ConnectionError(
-                "failed to connect to host {}, port {}: {}".format(self.address, self.port, str(e)))
+                "failed to connect to host {0}, port {1}: {2}".format(self.address, self.port, str(e)))
         else:
-            self.logger.debug("connected to {}:{}".format(self.address, self.port))
+            self.logger.debug("connected to {0}:{1}".format(self.address, self.port))
 
         return True
 
@@ -124,7 +124,7 @@ class LowLevel(object):
             password = self.password.md5()
         else:
             raise bareos.exceptions.ConnectionError(u'No password provides.')
-        self.logger.debug("identity = {}, password = {}".format(identity, password))
+        self.logger.debug("identity = {0}, password = {1}".format(identity, password))
         try:
             self.socket = sslpsk.wrap_socket(
                 client_socket,
@@ -134,7 +134,7 @@ class LowLevel(object):
                 server_side=False)
         except ssl.SSLError as e:
             # raise ConnectionError(
-            #     "failed to connect to host {}, port {}: {}".format(self.address, self.port, str(e)))
+            #     "failed to connect to host {0}, port {1}: {2}".format(self.address, self.port, str(e)))
             # Using a general raise keep more information about the type of error.
             raise
         return True
@@ -142,7 +142,7 @@ class LowLevel(object):
 
     def get_tls_psk_identity(self):
         '''Bareos TLS-PSK excepts the identiy is a specific format.'''
-        return u'{}{}{}'.format(self.identity_prefix, chr(0x1e), str(self.name))
+        return u'{0}{1}{2}'.format(self.identity_prefix, chr(0x1e), str(self.name))
 
     def is_tls_psk_available(self):
         '''Checks if we have all required modules for TLS-PSK.'''
@@ -171,7 +171,7 @@ class LowLevel(object):
         try:
             (ssl, result_compatible, result) = self._cram_md5_respond(password=self.password.md5(), tls_remote_need=0)
         except bareos.exceptions.SignalReceivedException as e:
-            raise bareos.exceptions.AuthenticationError('Received unexcepted signal: {}'.format(str(e)))
+            raise bareos.exceptions.AuthenticationError('Received unexcepted signal: {0}'.format(str(e)))
         if not result:
             raise bareos.exceptions.AuthenticationError("failed (in response)")
         if not self._cram_md5_challenge(clientname=self.name, password=self.password.md5(), tls_local_need=0, compatible=True):
@@ -239,7 +239,7 @@ class LowLevel(object):
 
         try:
             # convert to network flow
-            self.logger.debug('{}'.format(msg.rstrip()))
+            self.logger.debug('{0}'.format(msg.rstrip()))
             self.socket.sendall(struct.pack("!i", msg_len) + msg)
         except socket.error as e:
             self._handleSocketError(e)
