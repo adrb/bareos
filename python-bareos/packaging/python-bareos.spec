@@ -8,6 +8,8 @@
 # https://pagure.io/packaging-committee/blob/ae14fdb50cc6665a94bc32f7d984906ce1eece45/f/guidelines/modules/ROOT/pages/Python_Appendix.adoc
 #
 
+%global srcname bareos
+
 %define python2_build_requires python-rpm-macros python2-devel python2-setuptools
 %define python3_build_requires python-rpm-macros python3-devel python3-setuptools
 
@@ -16,7 +18,17 @@
 %define python2_build_requires python-rpm-macros python2-rpm-macros python-devel python-setuptools
 %endif
 
-%global srcname bareos
+
+%define python2_extra_package 1
+
+%if 0%{?rhel} > 0 && 0%{?rhel} <= 7
+%define python2_extra_package 0
+%endif
+
+%if 0%{?sle_version} <= 120000
+%define python2_extra_package 0
+%endif
+
 
 Name:           python-%{srcname}
 Version:        0
@@ -42,12 +54,17 @@ It also includes some tools based on this module.}
 
 %if ! 0%{?skip_python2}
 
+%if 0%{?python2_extra_package}
+
 %package -n python2-%{srcname}
 Summary:        %{summary}
 BuildRequires:  %{python2_build_requires}
 %{?python_provide:%python_provide python2-%{srcname}}
 
 %description -n python2-%{srcname} %_description
+
+%endif
+# python2_extra_package
 
 %endif
 # skip_python2
@@ -100,7 +117,12 @@ BuildRequires:  %{python3_build_requires}
 
 # Note that there is no %%files section for the unversioned python module if we are building for several python runtimes
 %if ! 0%{?skip_python2}
+%if ! 0%{?python2_extra_package}
+%files
+%else
 %files -n python2-%{srcname}
+%endif
+# python2_extra_package
 %defattr(-,root,root,-)
 %doc README.rst
 %{python2_sitelib}/%{srcname}/
