@@ -47,8 +47,9 @@ void ClientInitiatedReconnect::SetUp()
 {
   InitMsg(nullptr, nullptr);
 
-  std::string path_to_config_file = std::string(
-      PROJECT_SOURCE_DIR "/src/tests/configs/client-initiated-reconnect");
+  std::string path_to_config_file =
+      std::string(RELATIVE_PROJECT_SOURCE_DIR
+                  "/src/tests/configs/client-initiated-reconnect");
   my_config = InitDirConfig(path_to_config_file.c_str(), M_ERROR_TERM);
   my_config->ParseConfig();
 }
